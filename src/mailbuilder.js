@@ -2,35 +2,101 @@
 
 (function(define) {
     define(function(require, exports, module) {
+        var Mailbuilder, Node,
+            VERSION = '0.0.1',
+            NAME = 'mailbuilder';
 
-        var Mailbuilder, Node;
 
-        module.exports = Mailbuilder = function() {
-            this.nodes = [];
-            this.headers = [];
-        };
 
-        Mailbuilder.prototype.createNode = function() {
-            var node = new Node();
-            this.nodes.push(node);
-            return node;
-        };
+        // 
+        // Node
+        // 
 
         Node = function() {
             this.nodes = [];
         };
 
+        /**
+         * Example:
+         * {
+         *     'contentType': {
+         *         type: 'text/plain',
+         *         parameters: {
+         *             charset: 'utf-8',
+         *             name: 'yadda.txt'
+         *         }
+         *     },
+         *     'contentTransferEncoding': '7bit',
+         *     'contentDescription': 'yadda yadda foo foo',
+         *     'contentDisposition': {
+         *         type: 'attachment',
+         *         parameters: {
+         *             filename: 'yadda.txt'
+         *         }
+         *     }
+         * }
+         */
+        Node.prototype.setMimeHeaders = function(mimeHeaders) {
+            var self = this;
+
+            Object.keys(mimeHeaders).forEach(function(header) {
+                if (!mimeHeaders[header]) {
+                    return;
+                }
+
+                self[header] = mimeHeaders[header];
+            });
+        };
+
+        Node.prototype.createNode = function(mimeHeaders) {
+            var node = new Node();
+
+            node.setMimeHeaders(mimeHeaders);
+            this.nodes.push(node);
+
+            return node;
+        };
+
+
+        // 
+        // MailBuilder
+        // 
+
+        module.exports = Mailbuilder = function() {
+            this.nodes = [];
+        };
+
+        Mailbuilder.prototype.setEnvelope = function(envelope) {
+            this.envelope = {
+                from: envelope.from || [],
+                to: envelope.to || [],
+                cc: envelope.cc || [],
+                bcc: envelope.bcc || [],
+                date: envelope.date || new Date(),
+                subject: envelope.subject || '',
+                messageId: envelope.messageId || randomString(20) + '@' + NAME,
+                'X-Mailer': NAME + '_' + VERSION
+            };
+        };
+
+        Mailbuilder.prototype.createNode = Node.prototype.createNode;
+        Mailbuilder.prototype.build = function() {};
+
         //
         // Helper functions
         //
-
-        // function generateBoundary() {
-        //     return 'mailbuilder-xxxxxxxxxxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-        //         var r = Math.random() * 16 | 0,
-        //             v = c === 'x' ? r : (r & 0x3 | 0x8);
-        //         return v.toString(16);
-        //     });
-        // }
+        
+        /**
+         * Creates a random string with [0-9a-f] with <code>length</code> characters
+         */
+        function randomString(length) {
+            var i = length,
+                str = '';
+            while (i--) {
+                str += (Math.random() * 16 | 0).toString(16);
+            }
+            return str;
+        }
     });
 
 }(typeof define === 'function' && define.amd ? define : function(factory) {

@@ -1,0 +1,33 @@
+{
+    "name": "mailbuilder",
+    "author": "whiteout.io",
+    "maintainers": [{
+        "name": "Felix Hammerl",
+        "email": "mail@felixhammerl.com"
+    }],
+    "repository": {
+        "type": "git",
+        "url": "http://github.com/whiteout-io/mailbuilder.git"
+    },
+    "version": "0.0.1",
+    "licenses": [{
+        "type": "MIT",
+        "url": "http://github.com/whiteout-io/mailbuilder/blob/master/LICENSE"
+    }],
+    "engines": {
+        "node": ">=0.8"
+    },
+    "main": "./src/mailbuilder.js",
+    "scripts": {
+        "test": "grunt"
+    },
+    "dependencies": {},
+    "devDependencies": {
+        "grunt": "0.4.1",
+        "grunt-contrib-jshint": "0.6.4",
+        "grunt-mocha-test": "~0.8.1",
+        "mocha": "~1.16.2",
+        "chai": "~1.8.1"
+    },
+    "keywords": ["e-mail", "rfc822", "mime", "parser"]
+}

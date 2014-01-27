@@ -6,7 +6,7 @@ var chai = require('chai'),
 
 chai.Assertion.includeStack = true;
 
-describe('mailbuilder unit tests', function() {
+describe('unit tests', function() {
     var builder;
 
     beforeEach(function() {
@@ -18,77 +18,182 @@ describe('mailbuilder unit tests', function() {
     describe('initial setup', function() {
         it('should be correct', function() {
             expect(builder).to.exist;
-            expect(builder.nodes).to.be.instanceof.Array;
-            expect(builder.nodes).to.be.empty;
+            expect(builder.envelope[0].key).to.equal('MIME-Version');
+            expect(builder.envelope[0].value).to.equal('1.0');
+            expect(builder.envelope[1].key).to.equal('X-Mailer');
+            expect(builder.envelope[1].value).to.equal('mailbuilder_0.0.1');
         });
     });
 
-    describe('setEnvelope', function() {
-        it('should set defaults', function() {
-            builder.setEnvelope({});
-            
-            expect(builder.envelope.from).to.deep.equal([]);
-            expect(builder.envelope.to).to.deep.equal([]);
-            expect(builder.envelope.cc).to.deep.equal([]);
-            expect(builder.envelope.bcc).to.deep.equal([]);
-            expect(builder.envelope.date).to.be.instanceof.Date;
-            expect(builder.envelope.messageId).to.not.be.empty;
-            expect(builder.envelope['X-Mailer']).to.not.be.empty;
-        });
-
+    describe('Mailbuilder.envelope', function() {
         it('should set proper values', function() {
-            var env = {
-                from: ['a@a.com'],
-                to: ['b@b.com'],
-                cc: ['c@c.com'],
-                bcc: ['d@d.com'],
-                date: new Date(),
-                messageId: 'asdasdasd'
-            };
+            builder.addEnvelopeFields([{
+                key: 'From',
+                value: 'fred@foo.com'
+            }, {
+                key: 'To',
+                value: 'lala@tralala.de'
+            }, {
+                key: 'Subject',
+                value: 'Interesting subject'
+            }]);
 
-            builder.setEnvelope(env);
-            
-            expect(builder.envelope.from).to.equal(env.from);
-            expect(builder.envelope.to).to.equal(env.to);
-            expect(builder.envelope.cc).to.equal(env.cc);
-            expect(builder.envelope.bcc).to.equal(env.bcc);
-            expect(builder.envelope.date).to.equal(env.date);
-            expect(builder.envelope.messageId).to.equal(env.messageId);
-            expect(builder.envelope['X-Mailer']).to.not.be.empty;
+            expect(builder.envelope.length).to.equal(5);
         });
     });
 
-    describe('createNode', function() {
+    describe('Mailbuilder.createNode', function() {
         it('should create a node', function() {
-            var mime = {
-                'contentType': {
-                    type: 'text/plain',
-                    parameters: {
-                        charset: 'utf-8',
-                        name: 'yadda.txt'
-                    }
-                },
-                'contentTransferEncoding': '7bit',
-                'contentDescription': 'yadda yadda foo foo',
-                'contentDisposition': {
-                    type: 'attachment',
-                    parameters: {
-                        filename: 'yadda.txt'
-                    }
+            var mime = [{
+                key: 'Content-Type',
+                value: 'text/plain',
+                parameters: {
+                    charset: 'utf-8',
+                    name: 'yadda.txt'
                 }
-            };
+            }, {
+                key: 'Content-Transfer-Encoding',
+                value: '7bit'
+            }, {
+                key: 'Content-Description',
+                value: 'yadda yadda foo foo'
+            }, {
+                key: 'Content-Disposition',
+                value: 'attachment',
+                parameters: {
+                    filename: 'yadda.txt'
+                }
+            }];
 
             var node = builder.createNode(mime);
-
-            expect(node.contentType).to.equal(mime.contentType);
-            expect(node.contentTransferEncoding).to.equal(mime.contentTransferEncoding);
-            expect(node.contentDescription).to.equal(mime.contentDescription);
-            expect(node.contentDisposition).to.equal(mime.contentDisposition);
-            expect(builder.nodes).to.not.be.empty;
+            expect(node.mime[0].key).to.equal(mime[0].key);
+            expect(builder.node).to.exist;
         });
     });
 
-    describe('', function() {
-        it('should ', function() {});
+    describe('Node.compile', function() {
+        it('should compile the node correctly', function() {
+            var mime = [{
+                key: 'Content-Type',
+                value: 'text/plain',
+                parameters: {
+                    charset: 'utf-8',
+                    name: 'yadda.txt'
+                }
+            }, {
+                key: 'Content-Transfer-Encoding',
+                value: '7bit'
+            }, {
+                key: 'Content-Description',
+                value: 'yadda yadda foo foo'
+            }, {
+                key: 'Content-Disposition',
+                value: 'attachment',
+                parameters: {
+                    filename: 'yadda.txt'
+                }
+            }];
+
+            var node = builder.createNode(mime);
+            node.content = 'yaddayadda';
+
+            expect(node.compile()).to.equal('Content-Type: text/plain; charset="utf-8"; name="yadda.txt";\r\nContent-Transfer-Encoding: 7bit;\r\nContent-Description: yadda yadda foo foo;\r\nContent-Disposition: attachment; filename="yadda.txt";\r\n\r\nyaddayadda\r\n');
+        });
+
+        it('should compile multipart nodes correctly', function() {
+            var node, text, html;
+
+            node = builder.createNode([{
+                key: 'Content-Type',
+                value: 'multipart/alternative',
+                parameters: {
+                    boundary: 'foobarfoobarfoobarfoobarfoobar'
+                }
+            }]);
+
+            text = node.createNode([{
+                key: 'Content-Type',
+                value: 'text/plain'
+            }, {
+                key: 'Content-Transfer-Encoding',
+                value: 'quoted-printable'
+            }]);
+            text.content = 'yaddayadda';
+
+            html = node.createNode([{
+                key: 'Content-Type',
+                value: 'text/html'
+            }, {
+                key: 'Content-Transfer-Encoding',
+                value: 'quoted-printable'
+            }]);
+            html.content = '<div>fiifaafooo</div>';
+
+            expect(node.compile()).to.equal('Content-Type: multipart/alternative; boundary="foobarfoobarfoobarfoobarfoobar";\r\n\r\n--foobarfoobarfoobarfoobarfoobar\r\nContent-Type: text/plain;\r\nContent-Transfer-Encoding: quoted-printable;\r\n\r\nyaddayadda\r\n--foobarfoobarfoobarfoobarfoobar\r\nContent-Type: text/html;\r\nContent-Transfer-Encoding: quoted-printable;\r\n\r\n<div>fiifaafooo</div>\r\n--foobarfoobarfoobarfoobarfoobar--\r\n');
+        });
     });
+
+    describe('Mailbuilder.build', function() {
+        it('should build header', function() {
+            builder.addEnvelopeFields([{
+                key: 'From',
+                value: 'fred@foo.com'
+            }, {
+                key: 'To',
+                value: 'lala@tralala.de'
+            }, {
+                key: 'Subject',
+                value: 'Interesting subject'
+            }]);
+
+            expect(builder.build()).to.equal('MIME-Version: 1.0\r\nX-Mailer: mailbuilder_0.0.1\r\nFrom: fred@foo.com\r\nTo: lala@tralala.de\r\nSubject: Interesting subject\r\n');
+        });
+
+        it('should build nodes', function() {
+            builder.addEnvelopeFields([{
+                key: 'From',
+                value: 'fred@foo.com'
+            }, {
+                key: 'To',
+                value: 'lala@tralala.de'
+            }, {
+                key: 'Subject',
+                value: 'Interesting subject'
+            }]);
+
+            var node, text, html;
+
+            node = builder.createNode([{
+                key: 'Content-Type',
+                value: 'multipart/alternative',
+                parameters: {
+                    boundary: 'foobarfoobarfoobarfoobarfoobar'
+                }
+            }]);
+
+            text = node.createNode([{
+                key: 'Content-Type',
+                value: 'text/plain'
+            }, {
+                key: 'Content-Transfer-Encoding',
+                value: 'quoted-printable'
+            }]);
+            text.content = 'yaddayadda';
+
+            html = node.createNode([{
+                key: 'Content-Type',
+                value: 'text/html'
+            }, {
+                key: 'Content-Transfer-Encoding',
+                value: 'quoted-printable'
+            }]);
+            html.content = '<div>fiifaafooo</div>';
+
+            expect(builder.build()).to.equal('MIME-Version: 1.0\r\nX-Mailer: mailbuilder_0.0.1\r\nFrom: fred@foo.com\r\nTo: lala@tralala.de\r\nSubject: Interesting subject\r\nContent-Type: multipart/alternative; boundary="foobarfoobarfoobarfoobarfoobar";\r\n\r\n--foobarfoobarfoobarfoobarfoobar\r\nContent-Type: text/plain;\r\nContent-Transfer-Encoding: quoted-printable;\r\n\r\nyaddayadda\r\n--foobarfoobarfoobarfoobarfoobar\r\nContent-Type: text/html;\r\nContent-Transfer-Encoding: quoted-printable;\r\n\r\n<div>fiifaafooo</div>\r\n--foobarfoobarfoobarfoobarfoobar--\r\n');
+        });
+    });
+
+    // describe('', function() {
+    //     it('should ', function() {});
+    // });
 });

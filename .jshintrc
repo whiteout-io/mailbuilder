@@ -23,6 +23,7 @@
 		"describe": true,
 		"it": true,
         "beforeEach": true,
-        "afterEach": true
+        "afterEach": true,
+        "window": true
 	}
 }

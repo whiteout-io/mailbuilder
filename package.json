@@ -21,7 +21,9 @@
     "scripts": {
         "test": "grunt"
     },
-    "dependencies": {},
+    "dependencies": {
+        "mimelib": "https://github.com/whiteout-io/mimelib/tarball/amd"
+    },
     "devDependencies": {
         "grunt": "0.4.1",
         "grunt-contrib-jshint": "0.6.4",

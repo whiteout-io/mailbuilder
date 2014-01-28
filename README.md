@@ -10,13 +10,10 @@ compatible messages.
         builder = new Mailbuilder();
 
     var node = builder.createNode();
-    // do stuff
+    // add content, add MIME headers, add MIME nodes, ...
 
-    builder.build(function(err, output) {
-        console.log(err || output);
-    });
+    var raw = builder.build();
 
 ## Hands on
 
-    npm install
-    grunt
+    npm install && grunt

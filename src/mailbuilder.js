@@ -195,7 +195,7 @@
         function b64Encode(data) {
             if (typeof window !== 'undefined') {
                 // browser
-                return window.decodeURIComponent(window.escape(window.atob(data)));
+                return window.btoa(window.unescape(window.encodeURIComponent(data)));
             } else {
                 // node
                 return new Buffer(data, 'utf-8').toString('base64');

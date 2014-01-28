@@ -10,21 +10,48 @@ module.exports = function(grunt) {
             }
         },
 
+        connect: {
+            test: {
+                options: {
+                    port: 8123,
+                    base: '.'
+                }
+            },
+            dev: {
+                options: {
+                    port: 8124,
+                    base: '.',
+                    keepalive: true
+                }
+            }
+        },
+
         mochaTest: {
             all: {
                 options: {
                     reporter: 'dot'
                 },
-                src: ['test/*.js']
+                src: ['test/unit.js']
             }
         },
+
+        mocha_phantomjs: {
+            all: {
+                options: {
+                    reporter: 'dot'
+                },
+                src: ['test/unit.html']
+            }
+        }
     });
 
     // Load the plugin(s)
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-mocha-test');
+    grunt.loadNpmTasks('grunt-mocha-phantomjs');
+    grunt.loadNpmTasks('grunt-contrib-connect');
 
     // Tasks
-    grunt.registerTask('test', ['jshint', 'mochaTest']);
-    grunt.registerTask('default', ['test']);
+    grunt.registerTask('dev', ['connect:dev']);
+    grunt.registerTask('default', ['jshint', 'connect:test', 'mochaTest', 'mocha_phantomjs']);
 };

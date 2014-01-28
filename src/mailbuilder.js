@@ -1,8 +1,9 @@
-"use strict";
+'use strict';
 
 (function(define) {
     define(function(require, exports, module) {
         var Mailbuilder, Node,
+            mimelib = require('mimelib'),
             VERSION = '0.0.1',
             NAME = 'mailbuilder';
 
@@ -54,7 +55,10 @@
 
         Node.prototype.compile = function() {
             var output = '',
-                multipartBoundary;
+                multipartBoundary,
+                encoding,
+                flowed,
+                content = this.content;
 
             // compile the MIME info
             var mimeLines = [];
@@ -71,17 +75,33 @@
                 line += '\r\n';
                 mimeLines.push(line);
 
-                // is there a boundary?
                 if (i.key === 'Content-Type') {
+                    // is there already a predefined boundary?
                     multipartBoundary = (i.parameters && i.parameters.boundary) || randomString(30);
+                } else if (i.key === 'Content-Transfer-Encoding') {
+                    // which encoding should be used?
+                    encoding = i.value;
+                    flowed = i.parameters && i.parameters.format && i.parameters.format === 'flowed';
                 }
             });
 
             output += mimeLines.join('');
             output += '\r\n';
 
-            if (this.content) {
-                output += this.content;
+            if (content) {
+                if (encoding === 'quoted-printable') {
+                    content = mimelib.encodeQuotedPrintable(content);
+                } else if (encoding === 'base64') {
+                    content = b64Encode(content);
+                    // fold line after 76 characters
+                    content = content.replace(/.{76}/g, '$&\r\n');
+                } else {
+                    content = mimelib.foldLine(content, 76, true, flowed);
+                    // mimelib puts a long whitespace to the beginning of the lines
+                    content = content.replace(/^[ ]{7}/mg, '');
+                }
+
+                output += content;
                 output += '\r\n';
             }
 
@@ -170,6 +190,16 @@
                 str += (Math.random() * 16 | 0).toString(16);
             }
             return str;
+        }
+
+        function b64Encode(data) {
+            if (typeof window !== 'undefined') {
+                // browser
+                return window.decodeURIComponent(window.escape(window.atob(data)));
+            } else {
+                // node
+                return new Buffer(data, 'utf-8').toString('base64');
+            }
         }
     });
 

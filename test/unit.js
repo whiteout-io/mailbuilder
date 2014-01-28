@@ -131,6 +131,51 @@ describe('unit tests', function() {
 
             expect(node.compile()).to.equal('Content-Type: multipart/alternative; boundary="foobarfoobarfoobarfoobarfoobar";\r\n\r\n--foobarfoobarfoobarfoobarfoobar\r\nContent-Type: text/plain;\r\nContent-Transfer-Encoding: quoted-printable;\r\n\r\nyaddayadda\r\n--foobarfoobarfoobarfoobarfoobar\r\nContent-Type: text/html;\r\nContent-Transfer-Encoding: quoted-printable;\r\n\r\n<div>fiifaafooo</div>\r\n--foobarfoobarfoobarfoobarfoobar--\r\n');
         });
+
+        it('should compile base64 nodes correctly', function() {
+            var node;
+
+            node = builder.createNode([{
+                key: 'Content-Type',
+                value: 'text/plain',
+            }, {
+                key: 'Content-Transfer-Encoding',
+                value: 'base64'
+            }]);
+            node.content = 'Interested in having a direct impact on hundreds of millions of users? Join Mozilla, and become part of a global community that’s helping to build a brighter future for the Web.';
+
+            expect(node.compile()).to.equal('Content-Type: text/plain;\r\nContent-Transfer-Encoding: base64;\r\n\r\nSW50ZXJlc3RlZCBpbiBoYXZpbmcgYSBkaXJlY3QgaW1wYWN0IG9uIGh1bmRyZWRzIG9mIG1pbGxp\r\nb25zIG9mIHVzZXJzPyBKb2luIE1vemlsbGEsIGFuZCBiZWNvbWUgcGFydCBvZiBhIGdsb2JhbCBj\r\nb21tdW5pdHkgdGhhdOKAmXMgaGVscGluZyB0byBidWlsZCBhIGJyaWdodGVyIGZ1dHVyZSBmb3Ig\r\ndGhlIFdlYi4=\r\n');
+        });
+
+        it('should compile quoted-printable nodes correctly', function() {
+            var node;
+
+            node = builder.createNode([{
+                key: 'Content-Type',
+                value: 'text/plain',
+            }, {
+                key: 'Content-Transfer-Encoding',
+                value: 'quoted-printable'
+            }]);
+            node.content = 'Interested in having a direct impact on hundreds of millions of users? Join Mozilla, and become part of a global community that’s helping to build a brighter future for the Web.';
+
+            expect(node.compile()).to.equal('Content-Type: text/plain;\r\nContent-Transfer-Encoding: quoted-printable;\r\n\r\nInterested in having a direct impact on hundreds of millions of users=3F =\r\nJoin Mozilla, and become part of a global community that=E2=80=99s helping =\r\nto build a brighter future for the Web.\r\n');
+        });
+
+        it('should compile nodes with other encodings with line breaks after 76 chars correctly', function() {
+            var node;
+
+            node = builder.createNode([{
+                key: 'Content-Type',
+                value: 'text/plain',
+            }, {
+                key: 'Content-Transfer-Encoding',
+                value: '7bit'
+            }]);
+            node.content = '1qazxsw23edcvfr45tgbnhy67ujmki89olp01qazxsw23edcvfr45tgbnhy67ujmki89olp01qazxsw23edcvfr45tgbnhy67ujmki89olp01qazxsw23edcvfr45tgbnhy67ujmki89olp0';
+
+            expect(node.compile()).to.equal('Content-Type: text/plain;\r\nContent-Transfer-Encoding: 7bit;\r\n\r\n1qazxsw23edcvfr45tgbnhy67ujmki89olp01qazxsw23edcvfr45tgbnhy67ujmki89olp01qaz\r\nxsw23edcvfr45tgbnhy67ujmki89olp01qazxsw23edcvfr45tgbnhy67ujmki89olp0\r\n');
+        });
     });
 
     describe('Mailbuilder.build', function() {
@@ -192,8 +237,4 @@ describe('unit tests', function() {
             expect(builder.build()).to.equal('MIME-Version: 1.0\r\nX-Mailer: mailbuilder_0.0.1\r\nFrom: fred@foo.com\r\nTo: lala@tralala.de\r\nSubject: Interesting subject\r\nContent-Type: multipart/alternative; boundary="foobarfoobarfoobarfoobarfoobar";\r\n\r\n--foobarfoobarfoobarfoobarfoobar\r\nContent-Type: text/plain;\r\nContent-Transfer-Encoding: quoted-printable;\r\n\r\nyaddayadda\r\n--foobarfoobarfoobarfoobarfoobar\r\nContent-Type: text/html;\r\nContent-Transfer-Encoding: quoted-printable;\r\n\r\n<div>fiifaafooo</div>\r\n--foobarfoobarfoobarfoobarfoobar--\r\n');
         });
     });
-
-    // describe('', function() {
-    //     it('should ', function() {});
-    // });
 });

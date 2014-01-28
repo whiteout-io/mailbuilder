@@ -24,6 +24,8 @@
 		"it": true,
         "beforeEach": true,
         "afterEach": true,
-        "window": true
+        "window": true,
+        "mocha": true,
+        "mochaPhantomJS": true
 	}
 }

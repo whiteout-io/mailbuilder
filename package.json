@@ -1,6 +1,6 @@
 {
     "name": "mailbuilder",
-    "author": "whiteout.io",
+    "author": "Whiteout Networks",
     "maintainers": [{
         "name": "Felix Hammerl",
         "email": "mail@felixhammerl.com"
@@ -25,11 +25,20 @@
         "mimelib": "https://github.com/whiteout-io/mimelib/tarball/amd"
     },
     "devDependencies": {
+        "chai": "~1.8.1",
         "grunt": "0.4.1",
+        "grunt-contrib-connect": "~0.6.0",
         "grunt-contrib-jshint": "0.6.4",
+        "grunt-mocha-phantomjs": "~0.4.0",
         "grunt-mocha-test": "~0.8.1",
         "mocha": "~1.16.2",
-        "chai": "~1.8.1"
+        "phantomjs": "~1.9.7-1",
+        "requirejs": "~2.1.10"
     },
-    "keywords": ["e-mail", "rfc822", "mime", "parser"]
+    "keywords": [
+        "e-mail",
+        "rfc822",
+        "mime",
+        "parser"
+    ]
 }

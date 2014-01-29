@@ -135,23 +135,42 @@ define(function(require) {
             key: 'X-Mailer',
             value: NAME + '_' + VERSION
         }, ];
+
+        this.from = {};
+        this.to = [];
+        this.cc = [];
+        this.bcc = [];
+        this.subject = '(no subject)';
     };
 
-    /**
-     * Example:
-     * builder.addEnvelopeFields([{
-     *      key: 'From',
-     *      value: 'fred@foo.com'
-     *  }, {
-     *      key: 'To',
-     *      value: 'lala@tralala.de'
-     *  }, {
-     *      key: 'Subject',
-     *      value: 'Interesting subject'
-     *  }]);
-     */
+    Mailbuilder.prototype.setSender = function(sender) {
+        this.from = sender;
+    };
+
+    Mailbuilder.prototype.setSubject = function(subject) {
+        this.subject = subject;
+    };
+
+    Mailbuilder.prototype.addRecipients = function(recipients) {
+        this.to = this.to.concat(recipients);
+    };
+
+    Mailbuilder.prototype.addCc = function(recipients) {
+        this.cc = this.cc.concat(recipients);
+    };
+    Mailbuilder.prototype.addBcc = function(recipients) {
+        this.bcc = this.bcc.concat(recipients);
+    };
+
     Mailbuilder.prototype.addEnvelopeFields = function(fields) {
         this.envelope = this.envelope.concat(fields);
+    };
+
+    Mailbuilder.prototype.getEnvelope = function() {
+        return {
+            from: this.from,
+            to: this.to.concat(this.cc.concat(this.bcc))
+        };
     };
 
     Mailbuilder.prototype.createNode = function(mimeHeaders) {
@@ -171,6 +190,19 @@ define(function(require) {
             envelopeLines.push(i.key + ': ' + i.value + '\r\n');
         });
         output += envelopeLines.join('');
+
+        output += 'From: ' + this.from + '\r\n';
+
+        if (this.to.length > 0) {
+            output += 'To: ' + this.to.join(', ') + '\r\n';
+        }
+        if (this.cc.length > 0) {
+            output += 'Cc: ' + this.cc.join(', ') + '\r\n';
+        }
+        if (this.bcc.length > 0) {
+            output += 'Bcc: ' + this.bcc.join(', ') + '\r\n';
+        }
+        output += 'Subject: ' + this.subject + '\r\n';
 
         if (this.node) {
             output += this.node.compile();

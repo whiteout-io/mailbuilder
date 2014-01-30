@@ -128,13 +128,10 @@ define(function(require) {
     // 
 
     Mailbuilder = function() {
-        this.envelope = [{
-            key: 'MIME-Version',
-            value: '1.0'
-        }, {
-            key: 'X-Mailer',
-            value: NAME + '_' + VERSION
-        }, ];
+        this.envelope = {
+            'MIME-Version': '1.0',
+            'X-Mailer': NAME + '_' + VERSION
+        };
 
         this.from = {};
         this.to = [];
@@ -163,7 +160,11 @@ define(function(require) {
     };
 
     Mailbuilder.prototype.addEnvelopeFields = function(fields) {
-        this.envelope = this.envelope.concat(fields);
+        var self = this;
+
+        Object.keys(fields).forEach(function(key) {
+            self.envelope[key] = fields[key];
+        });
     };
 
     Mailbuilder.prototype.getEnvelope = function() {
@@ -183,30 +184,29 @@ define(function(require) {
     };
 
     Mailbuilder.prototype.build = function() {
-        var output = '',
-            envelopeLines = [];
+        var self = this,
+            output = '';
 
-        this.envelope.forEach(function(i) {
-            envelopeLines.push(i.key + ': ' + i.value + '\r\n');
+        Object.keys(self.envelope).forEach(function(key) {
+            output += key + ': ' + self.envelope[key] + '\r\n';
         });
-        output += envelopeLines.join('');
 
-        output += 'From: ' + this.from + '\r\n';
+        output += 'From: ' + self.from + '\r\n';
 
-        if (this.to.length > 0) {
-            output += 'To: ' + this.to.join(', ') + '\r\n';
+        if (self.to.length > 0) {
+            output += 'To: ' + self.to.join(', ') + '\r\n';
         }
-        if (this.cc.length > 0) {
-            output += 'Cc: ' + this.cc.join(', ') + '\r\n';
+        if (self.cc.length > 0) {
+            output += 'Cc: ' + self.cc.join(', ') + '\r\n';
         }
-        if (this.bcc.length > 0) {
-            output += 'Bcc: ' + this.bcc.join(', ') + '\r\n';
+        if (self.bcc.length > 0) {
+            output += 'Bcc: ' + self.bcc.join(', ') + '\r\n';
         }
 
-        output += 'Subject: ' + mimelib.encodeMimeWords(this.subject, 'Q', 52, 'utf-8') + '\r\n';
+        output += 'Subject: ' + mimelib.encodeMimeWords(self.subject, 'Q', 52, 'utf-8') + '\r\n';
 
-        if (this.node) {
-            output += this.node.compile();
+        if (self.node) {
+            output += self.node.compile();
         }
 
         return output;

@@ -25,34 +25,25 @@ define(function(require) {
         describe('initial setup', function() {
             it('should be correct', function() {
                 expect(builder).to.exist;
-                expect(builder.envelope[0].key).to.equal('MIME-Version');
-                expect(builder.envelope[0].value).to.equal('1.0');
-                expect(builder.envelope[1].key).to.equal('X-Mailer');
-                expect(builder.envelope[1].value).to.equal('mailbuilder_0.0.1');
+                expect(builder.envelope['MIME-Version']).to.equal('1.0');
+                expect(builder.envelope['X-Mailer']).to.equal('mailbuilder_0.0.1');
                 expect(builder.from).to.deep.equal({});
                 expect(builder.to).to.deep.equal([]);
                 expect(builder.cc).to.deep.equal([]);
                 expect(builder.bcc).to.deep.equal([]);
                 expect(builder.subject).to.equal('(no subject)');
-
-                expect(builder.envelope[1].value).to.equal('mailbuilder_0.0.1');
             });
         });
 
         describe('Mailbuilder.envelope', function() {
             it('should set proper values', function() {
-                builder.addEnvelopeFields([{
-                    key: 'From',
-                    value: 'fred@foo.com'
-                }, {
-                    key: 'To',
-                    value: 'lala@tralala.de'
-                }, {
-                    key: 'Subject',
-                    value: 'Interesting subject'
-                }]);
+                builder.addEnvelopeFields({
+                    bli: 'bla',
+                    foo: 'bar',
+                    bang: 'ow'
+                });
 
-                expect(builder.envelope.length).to.equal(5);
+                expect(Object.keys(builder.envelope).length).to.equal(5);
             });
         });
 

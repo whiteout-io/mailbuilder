@@ -24,6 +24,8 @@ define(function(require) {
 
         describe('initial setup', function() {
             it('should be correct', function() {
+                expect(Mailbuilder.Node).to.exist;
+
                 expect(builder).to.exist;
                 expect(builder.envelope['MIME-Version']).to.equal('1.0');
                 expect(builder.envelope['X-Mailer']).to.equal('mailbuilder_0.0.1');

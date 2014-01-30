@@ -139,6 +139,7 @@ define(function(require) {
         this.bcc = [];
         this.subject = '(no subject)';
     };
+    Mailbuilder.Node = Node;
 
     Mailbuilder.prototype.setSender = function(sender) {
         this.from = sender;

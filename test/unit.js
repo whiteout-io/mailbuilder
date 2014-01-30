@@ -76,8 +76,8 @@ define(function(require) {
             });
         });
 
-        describe('Node.compile', function() {
-            it('should compile the node correctly', function() {
+        describe('Node.build', function() {
+            it('should build the node correctly', function() {
                 var mime = [{
                     key: 'Content-Type',
                     value: 'text/plain',
@@ -102,10 +102,10 @@ define(function(require) {
                 var node = builder.createNode(mime);
                 node.content = 'yaddayadda';
 
-                expect(node.compile()).to.equal('Content-Type: text/plain; charset="utf-8"; name="yadda.txt";\r\nContent-Transfer-Encoding: 7bit;\r\nContent-Description: yadda yadda foo foo;\r\nContent-Disposition: attachment; filename="yadda.txt";\r\n\r\nyaddayadda\r\n');
+                expect(node.build()).to.equal('Content-Type: text/plain; charset="utf-8"; name="yadda.txt";\r\nContent-Transfer-Encoding: 7bit;\r\nContent-Description: yadda yadda foo foo;\r\nContent-Disposition: attachment; filename="yadda.txt";\r\n\r\nyaddayadda\r\n');
             });
 
-            it('should compile multipart nodes correctly', function() {
+            it('should build multipart nodes correctly', function() {
                 var node, text, html;
 
                 node = builder.createNode([{
@@ -134,10 +134,10 @@ define(function(require) {
                 }]);
                 html.content = '<div>fiifaafooo</div>';
 
-                expect(node.compile()).to.equal('Content-Type: multipart/alternative; boundary="foobarfoobarfoobarfoobarfoobar";\r\n\r\n--foobarfoobarfoobarfoobarfoobar\r\nContent-Type: text/plain;\r\nContent-Transfer-Encoding: quoted-printable;\r\n\r\nyaddayadda\r\n--foobarfoobarfoobarfoobarfoobar\r\nContent-Type: text/html;\r\nContent-Transfer-Encoding: quoted-printable;\r\n\r\n<div>fiifaafooo</div>\r\n--foobarfoobarfoobarfoobarfoobar--\r\n');
+                expect(node.build()).to.equal('Content-Type: multipart/alternative; boundary="foobarfoobarfoobarfoobarfoobar";\r\n\r\n--foobarfoobarfoobarfoobarfoobar\r\nContent-Type: text/plain;\r\nContent-Transfer-Encoding: quoted-printable;\r\n\r\nyaddayadda\r\n--foobarfoobarfoobarfoobarfoobar\r\nContent-Type: text/html;\r\nContent-Transfer-Encoding: quoted-printable;\r\n\r\n<div>fiifaafooo</div>\r\n--foobarfoobarfoobarfoobarfoobar--\r\n');
             });
 
-            it('should compile base64 nodes correctly', function() {
+            it('should build base64 nodes correctly', function() {
                 var node;
 
                 node = builder.createNode([{
@@ -149,10 +149,10 @@ define(function(require) {
                 }]);
                 node.content = 'wellthisisanincrediblylongstringprobablysomesortofstringrepresentationofabrowserthingyohmyidonotnowwhattowritehere';
 
-                expect(node.compile()).to.equal('Content-Type: text/plain;\r\nContent-Transfer-Encoding: base64;\r\n\r\nd2VsbHRoaXNpc2FuaW5jcmVkaWJseWxvbmdzdHJpbmdwcm9iYWJseXNvbWVzb3J0b2ZzdHJpbmdy\r\nZXByZXNlbnRhdGlvbm9mYWJyb3dzZXJ0aGluZ3lvaG15aWRvbm90bm93d2hhdHRvd3JpdGVoZXJl\r\n\r\n');
+                expect(node.build()).to.equal('Content-Type: text/plain;\r\nContent-Transfer-Encoding: base64;\r\n\r\nd2VsbHRoaXNpc2FuaW5jcmVkaWJseWxvbmdzdHJpbmdwcm9iYWJseXNvbWVzb3J0b2ZzdHJpbmdy\r\nZXByZXNlbnRhdGlvbm9mYWJyb3dzZXJ0aGluZ3lvaG15aWRvbm90bm93d2hhdHRvd3JpdGVoZXJl\r\n\r\n');
             });
 
-            it('should compile quoted-printable nodes correctly', function() {
+            it('should build quoted-printable nodes correctly', function() {
                 var node;
 
                 node = builder.createNode([{
@@ -164,10 +164,10 @@ define(function(require) {
                 }]);
                 node.content = 'Interested in having a direct impact on hundreds of millions of users? Join Mozilla, and become part of a global community that’s helping to build a brighter future for the Web.';
 
-                expect(node.compile()).to.equal('Content-Type: text/plain;\r\nContent-Transfer-Encoding: quoted-printable;\r\n\r\nInterested in having a direct impact on hundreds of millions of users=3F =\r\nJoin Mozilla, and become part of a global community that=E2=80=99s helping =\r\nto build a brighter future for the Web.\r\n');
+                expect(node.build()).to.equal('Content-Type: text/plain;\r\nContent-Transfer-Encoding: quoted-printable;\r\n\r\nInterested in having a direct impact on hundreds of millions of users=3F =\r\nJoin Mozilla, and become part of a global community that=E2=80=99s helping =\r\nto build a brighter future for the Web.\r\n');
             });
 
-            it('should compile nodes with other encodings with line breaks after 76 chars correctly', function() {
+            it('should build nodes with other encodings with line breaks after 76 chars correctly', function() {
                 var node;
 
                 node = builder.createNode([{
@@ -179,7 +179,7 @@ define(function(require) {
                 }]);
                 node.content = '1qazxsw23edcvfr45tgbnhy67ujmki89olp01qazxsw23edcvfr45tgbnhy67ujmki89olp01qazxsw23edcvfr45tgbnhy67ujmki89olp01qazxsw23edcvfr45tgbnhy67ujmki89olp0';
 
-                expect(node.compile()).to.equal('Content-Type: text/plain;\r\nContent-Transfer-Encoding: 7bit;\r\n\r\n1qazxsw23edcvfr45tgbnhy67ujmki89olp01qazxsw23edcvfr45tgbnhy67ujmki89olp01qaz\r\nxsw23edcvfr45tgbnhy67ujmki89olp01qazxsw23edcvfr45tgbnhy67ujmki89olp0\r\n');
+                expect(node.build()).to.equal('Content-Type: text/plain;\r\nContent-Transfer-Encoding: 7bit;\r\n\r\n1qazxsw23edcvfr45tgbnhy67ujmki89olp01qazxsw23edcvfr45tgbnhy67ujmki89olp01qaz\r\nxsw23edcvfr45tgbnhy67ujmki89olp01qazxsw23edcvfr45tgbnhy67ujmki89olp0\r\n');
             });
         });
 

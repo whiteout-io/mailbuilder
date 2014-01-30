@@ -58,7 +58,7 @@ define(function(require) {
         return node;
     };
 
-    Node.prototype.compile = function() {
+    Node.prototype.build = function() {
         var output = '',
             multipartBoundary,
             encoding,
@@ -113,7 +113,7 @@ define(function(require) {
         if (this.nodes.length > 0) {
             this.nodes.forEach(function(node) {
                 output += '--' + multipartBoundary + '\r\n';
-                output += node.compile();
+                output += node.build();
             });
             output += '--' + multipartBoundary + '--' + '\r\n';
         }
@@ -206,7 +206,7 @@ define(function(require) {
         output += 'Subject: ' + mimelib.encodeMimeWords(self.subject, 'Q', 52, 'utf-8') + '\r\n';
 
         if (self.node) {
-            output += self.node.compile();
+            output += self.node.build();
         }
 
         return output;

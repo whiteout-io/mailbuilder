@@ -196,9 +196,9 @@ define(function(require) {
             it('should build header', function() {
                 builder.setSender('fred@foo.com');
                 builder.addRecipients('lala@tralala.de');
-                builder.setSubject('Interesting subject');
+                builder.setSubject('¡Hola, señor!');
 
-                expect(builder.build()).to.equal('MIME-Version: 1.0\r\nX-Mailer: mailbuilder_0.0.1\r\nFrom: fred@foo.com\r\nTo: lala@tralala.de\r\nSubject: Interesting subject\r\n');
+                expect(builder.build()).to.equal('MIME-Version: 1.0\r\nX-Mailer: mailbuilder_0.0.1\r\nFrom: fred@foo.com\r\nTo: lala@tralala.de\r\nSubject: =?UTF-8?Q?=C2=A1Hola,_se=C3=B1or!?=\r\n');
             });
 
             it('should build nodes', function() {

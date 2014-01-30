@@ -202,7 +202,8 @@ define(function(require) {
         if (this.bcc.length > 0) {
             output += 'Bcc: ' + this.bcc.join(', ') + '\r\n';
         }
-        output += 'Subject: ' + this.subject + '\r\n';
+
+        output += 'Subject: ' + mimelib.encodeMimeWords(this.subject, 'Q', 52, 'utf-8') + '\r\n';
 
         if (this.node) {
             output += this.node.compile();

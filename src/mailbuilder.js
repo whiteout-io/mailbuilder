@@ -141,7 +141,7 @@ define(function(require) {
     };
     Mailbuilder.Node = Node;
 
-    Mailbuilder.prototype.setSender = function(sender) {
+    Mailbuilder.prototype.setFrom = function(sender) {
         this.from = sender;
     };
 
@@ -149,7 +149,7 @@ define(function(require) {
         this.subject = subject;
     };
 
-    Mailbuilder.prototype.addRecipients = function(recipients) {
+    Mailbuilder.prototype.addTo = function(recipients) {
         this.to = this.to.concat(recipients);
     };
 

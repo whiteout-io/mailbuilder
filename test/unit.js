@@ -187,16 +187,16 @@ define(function(require) {
 
         describe('Mailbuilder.build', function() {
             it('should build header', function() {
-                builder.setSender('fred@foo.com');
-                builder.addRecipients('lala@tralala.de');
+                builder.setFrom('fred@foo.com');
+                builder.addTo('lala@tralala.de');
                 builder.setSubject('¡Hola, señor!');
 
                 expect(builder.build()).to.equal('MIME-Version: 1.0\r\nX-Mailer: mailbuilder_0.0.1\r\nFrom: fred@foo.com\r\nTo: lala@tralala.de\r\nSubject: =?UTF-8?Q?=C2=A1Hola,_se=C3=B1or!?=\r\n');
             });
 
             it('should build nodes', function() {
-                builder.setSender('fred@foo.com');
-                builder.addRecipients('lala@tralala.de');
+                builder.setFrom('fred@foo.com');
+                builder.addTo('lala@tralala.de');
                 builder.setSubject('Interesting subject');
 
                 var node, text, html;
@@ -233,12 +233,12 @@ define(function(require) {
 
         describe('Mailbuilder.getEnvelope', function() {
             it('should get envelope', function() {
-                builder.setSender('fred@foo.com');
-                builder.addRecipients('lala@tralala.de');
-                builder.setSubject('Interesting subject');
+                builder.setFrom('fred@foo.com');
+                builder.addTo('lala@tralala.de');
                 builder.addCc('a@z.de');
                 builder.addCc('b@z.de');
                 builder.addBcc('c@z.de');
+                builder.setSubject('Interesting subject');
 
                 expect(builder.getEnvelope()).to.deep.equal({
                     "from": 'fred@foo.com',

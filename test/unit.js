@@ -104,7 +104,7 @@ define(function(require) {
                 var node = builder.createNode(mime);
                 node.content = 'yaddayadda';
 
-                expect(node.build()).to.equal('Content-Type: text/plain; charset="utf-8"; name="yadda.txt";\r\nContent-Transfer-Encoding: 7bit\r\nContent-Description: yadda yadda foo foo\r\nContent-Disposition: attachment; filename="yadda.txt";\r\n\r\nyaddayadda\r\n\r\n');
+                expect(node.build()).to.equal('Content-Type: text/plain; charset="utf-8"; name="yadda.txt"\r\nContent-Transfer-Encoding: 7bit\r\nContent-Description: yadda yadda foo foo\r\nContent-Disposition: attachment; filename="yadda.txt"\r\n\r\nyaddayadda\r\n\r\n');
             });
 
             it('should build multipart nodes correctly', function() {
@@ -136,7 +136,7 @@ define(function(require) {
                 }]);
                 html.content = '<div>fiifaafooo</div>';
 
-                expect(node.build()).to.equal('Content-Type: multipart/alternative; boundary="foobarfoobarfoobarfoobarfoobar";\r\n\r\n--foobarfoobarfoobarfoobarfoobar\r\nContent-Type: text/plain\r\nContent-Transfer-Encoding: quoted-printable\r\n\r\nyaddayadda\r\n\r\n--foobarfoobarfoobarfoobarfoobar\r\nContent-Type: text/html\r\nContent-Transfer-Encoding: quoted-printable\r\n\r\n<div>fiifaafooo</div>\r\n\r\n--foobarfoobarfoobarfoobarfoobar--\r\n');
+                expect(node.build()).to.equal('Content-Type: multipart/alternative; boundary="foobarfoobarfoobarfoobarfoobar"\r\n\r\n--foobarfoobarfoobarfoobarfoobar\r\nContent-Type: text/plain\r\nContent-Transfer-Encoding: quoted-printable\r\n\r\nyaddayadda\r\n\r\n--foobarfoobarfoobarfoobarfoobar\r\nContent-Type: text/html\r\nContent-Transfer-Encoding: quoted-printable\r\n\r\n<div>fiifaafooo</div>\r\n\r\n--foobarfoobarfoobarfoobarfoobar--\r\n');
             });
 
             it('should build base64 nodes correctly', function() {
@@ -227,7 +227,7 @@ define(function(require) {
                 }]);
                 html.content = '<div>fiifaafooo</div>';
 
-                expect(builder.build()).to.equal('MIME-Version: 1.0\r\nX-Mailer: mailbuilder_0.0.1\r\nFrom: fred@foo.com\r\nTo: lala@tralala.de\r\nSubject: Interesting subject\r\nContent-Type: multipart/alternative; boundary="foobarfoobarfoobarfoobarfoobar";\r\n\r\n--foobarfoobarfoobarfoobarfoobar\r\nContent-Type: text/plain\r\nContent-Transfer-Encoding: quoted-printable\r\n\r\nyaddayadda\r\n\r\n--foobarfoobarfoobarfoobarfoobar\r\nContent-Type: text/html\r\nContent-Transfer-Encoding: quoted-printable\r\n\r\n<div>fiifaafooo</div>\r\n\r\n--foobarfoobarfoobarfoobarfoobar--\r\n');
+                expect(builder.build()).to.equal('MIME-Version: 1.0\r\nX-Mailer: mailbuilder_0.0.1\r\nFrom: fred@foo.com\r\nTo: lala@tralala.de\r\nSubject: Interesting subject\r\nContent-Type: multipart/alternative; boundary="foobarfoobarfoobarfoobarfoobar"\r\n\r\n--foobarfoobarfoobarfoobarfoobar\r\nContent-Type: text/plain\r\nContent-Transfer-Encoding: quoted-printable\r\n\r\nyaddayadda\r\n\r\n--foobarfoobarfoobarfoobarfoobar\r\nContent-Type: text/html\r\nContent-Transfer-Encoding: quoted-printable\r\n\r\n<div>fiifaafooo</div>\r\n\r\n--foobarfoobarfoobarfoobarfoobar--\r\n');
             });
         });
 

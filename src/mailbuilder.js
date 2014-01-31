@@ -46,6 +46,9 @@ define(function(require) {
      *  }]);
      */
     Node.prototype.addMimeHeaders = function(headers) {
+        headers.forEach(function(header) {
+            header.parameters = header.parameters || {};
+        });
         this.mime = this.mime.concat(headers);
     };
 
@@ -71,24 +74,29 @@ define(function(require) {
             var line = '';
             line += i.key + ': ' + i.value;
 
-            if (i.parameters) {
-                line += ';';
-                Object.keys(i.parameters).forEach(function(key) {
-                    line += ' ' + key + '="' + i.parameters[key] + '";';
-                });
-            }
-
-            line += '\r\n';
-            mimeLines.push(line);
-
-            if (i.key === 'Content-Type') {
-                // is there already a predefined boundary?
-                multipartBoundary = (i.parameters && i.parameters.boundary) || randomString(30);
+            // some checks for the parameters: 
+            // - is there a boundary? if yes, remember locally
+            // - what's the encoding? do we have a flowed format?
+            // 
+            if (i.key === 'Content-Type' && i.value.indexOf('multipart') === 0) {
+                // if there is no predefined multipart boundary, generate from random
+                if (typeof i.parameters.boundary === 'undefined') {
+                    i.parameters.boundary = randomString(30);
+                }
+                multipartBoundary = i.parameters.boundary;
             } else if (i.key === 'Content-Transfer-Encoding') {
                 // which encoding should be used?
                 encoding = i.value;
-                flowed = i.parameters && i.parameters.format && i.parameters.format === 'flowed';
+                flowed = i.parameters.format && i.parameters.format === 'flowed';
             }
+
+            // enumerate the parameters
+            Object.keys(i.parameters).forEach(function(key) {
+                line += '; ' + key + '="' + i.parameters[key] + '"';
+            });
+
+            line += '\r\n';
+            mimeLines.push(line);
         });
 
         output += mimeLines.join('');

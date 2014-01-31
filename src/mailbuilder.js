@@ -69,9 +69,10 @@ define(function(require) {
         var mimeLines = [];
         this.mime.forEach(function(i) {
             var line = '';
-            line += i.key + ': ' + i.value + ';';
+            line += i.key + ': ' + i.value;
 
             if (i.parameters) {
+                line += ';';
                 Object.keys(i.parameters).forEach(function(key) {
                     line += ' ' + key + '="' + i.parameters[key] + '";';
                 });
@@ -107,7 +108,7 @@ define(function(require) {
             }
 
             output += content;
-            output += '\r\n';
+            output += '\r\n\r\n';
         }
 
         if (this.nodes.length > 0) {

@@ -124,7 +124,7 @@ define(function(require) {
                 output += '--' + multipartBoundary + '\r\n';
                 output += node.build();
             });
-            output += '--' + multipartBoundary + '--' + '\r\n';
+            output += '--' + multipartBoundary + '--' + '\r\n\r\n';
         }
 
         return output;
@@ -243,7 +243,7 @@ define(function(require) {
     function b64Encode(data) {
         if (typeof window !== 'undefined') {
             // browser
-            return window.btoa(window.unescape(window.encodeURIComponent(data)));
+            return btoa(unescape(encodeURIComponent(data)));
         } else {
             // node
             return new Buffer(data, 'utf-8').toString('base64');

@@ -243,14 +243,33 @@ define(function(require) {
     function b64Encode(data) {
         if (typeof window !== 'undefined') {
             // browser
-            return btoa(unescape(encodeURIComponent(data)));
+            if (typeof(data) === 'string') {
+                return btoa(unescape(encodeURIComponent( data )));
+            }
+
+            // we have a typed array
+            
+            return btoa(arr2str(data));
         } else {
             // node
-            return new Buffer(data, 'utf-8').toString('base64');
+            if (typeof(data) === 'string') {
+                return new Buffer(data, 'utf-8').toString('base64');
+            }
+
+            // we have a typed array
+            return new Buffer(String.fromCharCode.apply(null, data), 'binary').toString('base64');
         }
     }
 
+    function arr2str(arr) {
+        var i, l, str = '';
 
+        for (i = 0, l = arr.length; i < l; i++) {
+            str += String.fromCharCode(arr[i]);
+        }
+
+        return str;
+    }
 
     return Mailbuilder;
 });

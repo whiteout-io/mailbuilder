@@ -154,6 +154,21 @@ define(function(require) {
                 expect(node.build()).to.equal('Content-Type: text/plain\r\nContent-Transfer-Encoding: base64\r\n\r\nd2VsbHRoaXNpc2FuaW5jcmVkaWJseWxvbmdzdHJpbmdwcm9iYWJseXNvbWVzb3J0b2ZzdHJpbmdy\r\nZXByZXNlbnRhdGlvbm9mYWJyb3dzZXJ0aGluZ3lvaG15aWRvbm90bm93d2hhdHRvd3JpdGVoZXJl\r\n\r\n\r\n');
             });
 
+            it('should build base64 nodes correctly with typed arrays', function() {
+                var node;
+
+                node = builder.createNode([{
+                    key: 'Content-Type',
+                    value: 'text/plain',
+                }, {
+                    key: 'Content-Transfer-Encoding',
+                    value: 'base64'
+                }]);
+                node.content = str2arr('wellthisisanincrediblylongstringprobablysomesortofstringrepresentationofabrowserthingyohmyidonotnowwhattowritehere');
+
+                expect(node.build()).to.equal('Content-Type: text/plain\r\nContent-Transfer-Encoding: base64\r\n\r\nd2VsbHRoaXNpc2FuaW5jcmVkaWJseWxvbmdzdHJpbmdwcm9iYWJseXNvbWVzb3J0b2ZzdHJpbmdy\r\nZXByZXNlbnRhdGlvbm9mYWJyb3dzZXJ0aGluZ3lvaG15aWRvbm90bm93d2hhdHRvd3JpdGVoZXJl\r\n\r\n\r\n');
+            });
+
             it('should build quoted-printable nodes correctly', function() {
                 var node;
 
@@ -247,4 +262,13 @@ define(function(require) {
             });
         });
     });
+
+    function str2arr(str) {
+        var bufView = new Uint8Array(new ArrayBuffer(str.length));
+        for (var i = 0, strLen = str.length; i < strLen; i++) {
+            bufView[i] = str.charCodeAt(i);
+        }
+        return bufView;
+    }
+
 });

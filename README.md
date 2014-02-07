@@ -21,9 +21,7 @@ The constructor takes no arguments, so nothing fancy here.
     mailbuilder.addCc(address)
     mailbuilder.addBcc(address)
 
-`address` is either just `'foo@bar.com'` without angled brackets, or `'Foo Bar <foo@bar.com>'`. 
-
-*If you use unicode chars in the display name, you must take care to encode them properly yourself!* The mailbuilder *does not sanitize the addresses*. They must be provided as 7-bit ASCII strings.
+`address` is just a string in the form of `'foo@bar.com'`. *If you use unicode chars in the display name in the form of `'Foo Bar <foo@bar.com>'`, you must take care to encode them properly yourself!* The mailbuilder *does not sanitize the addresses*. They must be provided as 7-bit ASCII strings.
 
 ### Add a subject
 

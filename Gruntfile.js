@@ -42,6 +42,12 @@ module.exports = function(grunt) {
                 },
                 src: ['test/unit.html']
             }
+        },
+
+        execute: {
+            target: {
+                src: ['test/example.js']
+            }
         }
     });
 
@@ -50,8 +56,10 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-mocha-test');
     grunt.loadNpmTasks('grunt-mocha-phantomjs');
     grunt.loadNpmTasks('grunt-contrib-connect');
+    grunt.loadNpmTasks('grunt-execute');
 
     // Tasks
     grunt.registerTask('dev', ['connect:dev']);
-    grunt.registerTask('default', ['jshint', 'connect:test', 'mochaTest', 'mocha_phantomjs']);
+    grunt.registerTask('example', ['jshint', 'execute']);
+    grunt.registerTask('default', ['jshint', 'connect:test', 'mochaTest:all', 'mocha_phantomjs']);
 };

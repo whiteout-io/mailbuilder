@@ -12,38 +12,17 @@ define(function(require) {
         VERSION = '0.0.1',
         NAME = 'mailbuilder';
 
-
-    // 
-    // Node
-    // 
-
+    /**
+     * Represents a MIME node, which contains content and information about the type of content it houses.
+     */
     Node = function() {
         this.nodes = [];
         this.mime = [];
     };
 
     /**
-     * Example:
-     * node.addMimeHeaders([{
-     *      key: 'Content-Type',
-     *      value: 'text/plain',
-     *      parameters: {
-     *          charset: 'utf-8',
-     *          name: 'yadda.txt'
-     *      }
-     *  }, {
-     *      key: 'Content-Transfer-Encoding',
-     *      value: '7bit'
-     *  }, {
-     *      key: 'Content-Description',
-     *      value: 'yadda yadda foo foo'
-     *  }, {
-     *      key: 'Content-Disposition',
-     *      value: 'attachment',
-     *      parameters: {
-     *          filename: 'yadda.txt'
-     *      }
-     *  }]);
+     * Add mime header information.
+     * @param {Array} headers Array of objects containing key/value pairs and additional parameters.
      */
     Node.prototype.addMimeHeaders = function(headers) {
         headers.forEach(function(header) {
@@ -52,6 +31,10 @@ define(function(require) {
         this.mime = this.mime.concat(headers);
     };
 
+    /**
+     * Creates a MIME node with the provided MIME header information, see Node.addMimeHeaders
+     * @param {Array} headers Array of objects containing key/value pairs and additional parameters.
+     */
     Node.prototype.createNode = function(mimeHeaders) {
         var node = new Node();
 
@@ -61,6 +44,10 @@ define(function(require) {
         return node;
     };
 
+    /**
+     * Builds a MIME node and its childres
+     * @return {String} Outputs an RFC-compatible raw flattened MIME-tree
+     */
     Node.prototype.build = function() {
         var output = '',
             multipartBoundary,
@@ -130,12 +117,9 @@ define(function(require) {
         return output;
     };
 
-
-
-    // 
-    // MailBuilder
-    // 
-
+    /**
+     * Top-level object to build RFC-compatible from mail objects
+     */
     Mailbuilder = function() {
         this.envelope = {
             'MIME-Version': '1.0',
@@ -148,27 +132,54 @@ define(function(require) {
         this.bcc = [];
         this.subject = '(no subject)';
     };
+
+    // expose the MIME node API
     Mailbuilder.Node = Node;
 
+    /**
+     * Set an address as the sender
+     * @param {String} sender The sender as a 7-bit ASCII string
+     */
     Mailbuilder.prototype.setFrom = function(sender) {
         this.from = sender;
     };
 
+    /**
+     * Set the subject.
+     * @param {String} subject The subject
+     */
     Mailbuilder.prototype.setSubject = function(subject) {
         this.subject = subject;
     };
 
+    /**
+     * Add a recipient
+     * @param {Array or String} recipients String or an array of string containing the recipients
+     */
     Mailbuilder.prototype.addTo = function(recipients) {
         this.to = this.to.concat(recipients);
     };
 
+    /**
+     * Add a recipient as CC
+     * @param {Array or String} recipients String or an array of string containing the recipients
+     */
     Mailbuilder.prototype.addCc = function(recipients) {
         this.cc = this.cc.concat(recipients);
     };
+
+    /**
+     * Add a recipient as BCC
+     * @param {Array or String} recipients String or an array of string containing the recipients
+     */
     Mailbuilder.prototype.addBcc = function(recipients) {
         this.bcc = this.bcc.concat(recipients);
     };
 
+    /**
+     * Add custom envelope fields
+     * @param {Object} fields Object with custom envelope field
+     */
     Mailbuilder.prototype.addEnvelopeFields = function(fields) {
         var self = this;
 
@@ -177,6 +188,10 @@ define(function(require) {
         });
     };
 
+    /**
+     * Get the SMTP envelope of a mail
+     * @return {Object} Object with the properties from {Object} and to {Array}
+     */
     Mailbuilder.prototype.getEnvelope = function() {
         return {
             from: this.from,
@@ -184,6 +199,10 @@ define(function(require) {
         };
     };
 
+    /**
+     * Create a top-level MIME node with the specified MIME headers
+     * @param {Object} mimeHeaders The mime headers. See Node.addMimeHeaders
+     */
     Mailbuilder.prototype.createNode = function(mimeHeaders) {
         var node = new Node();
 
@@ -193,6 +212,9 @@ define(function(require) {
         return node;
     };
 
+    /** 
+     * Converts the envelope and the flattened MIME tree into RFC compatible format
+     */
     Mailbuilder.prototype.build = function() {
         var self = this,
             output = '';

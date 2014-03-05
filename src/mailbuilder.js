@@ -82,12 +82,10 @@ define(function(require) {
                 line += '; ' + key + '="' + i.parameters[key] + '"';
             });
 
-            line += '\r\n';
             mimeLines.push(line);
         });
 
-        output += mimeLines.join('');
-        output += '\r\n';
+        output += mimeLines.join('\r\n') + '\r\n';
 
         if (content) {
             if (encoding === 'quoted-printable') {
@@ -102,17 +100,18 @@ define(function(require) {
                 content = content.replace(/^[ ]{7}/mg, '');
             }
 
-            output += content;
-            output += '\r\n\r\n';
+            output += '\r\n' + content.trim();
         }
 
         if (this.nodes.length > 0) {
+            output += '\r\n';
             this.nodes.forEach(function(node) {
-                output += '--' + multipartBoundary + '\r\n';
-                output += node.build();
+                output += '--' + multipartBoundary + '\r\n' + node.build() + '\r\n';
             });
-            output += '--' + multipartBoundary + '--' + '\r\n\r\n';
+            output += '--' + multipartBoundary + '--';
         }
+
+        output += '\r\n';
 
         return output;
     };

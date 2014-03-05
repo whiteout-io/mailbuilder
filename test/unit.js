@@ -28,7 +28,6 @@ define(function(require) {
 
                 expect(builder).to.exist;
                 expect(builder.envelope['MIME-Version']).to.equal('1.0');
-                expect(builder.envelope['X-Mailer']).to.equal('mailbuilder_0.0.1');
                 expect(builder.from).to.deep.equal({});
                 expect(builder.to).to.deep.equal([]);
                 expect(builder.cc).to.deep.equal([]);
@@ -45,7 +44,7 @@ define(function(require) {
                     bang: 'ow'
                 });
 
-                expect(Object.keys(builder.envelope).length).to.equal(5);
+                expect(Object.keys(builder.envelope).length).to.equal(4);
             });
         });
 
@@ -206,7 +205,7 @@ define(function(require) {
                 builder.addTo('lala@tralala.de');
                 builder.setSubject('¡Hola, señor!');
 
-                expect(builder.build()).to.equal('MIME-Version: 1.0\r\nX-Mailer: mailbuilder_0.0.1\r\nFrom: fred@foo.com\r\nTo: lala@tralala.de\r\nSubject: =?UTF-8?Q?=C2=A1Hola,_se=C3=B1or!?=\r\n');
+                expect(builder.build()).to.equal('MIME-Version: 1.0\r\nFrom: fred@foo.com\r\nTo: lala@tralala.de\r\nSubject: =?UTF-8?Q?=C2=A1Hola,_se=C3=B1or!?=\r\n');
             });
 
             it('should build nodes', function() {
@@ -242,7 +241,7 @@ define(function(require) {
                 }]);
                 html.content = '<div>fiifaafooo</div>';
 
-                expect(builder.build()).to.equal('MIME-Version: 1.0\r\nX-Mailer: mailbuilder_0.0.1\r\nFrom: fred@foo.com\r\nTo: lala@tralala.de\r\nSubject: Interesting subject\r\nContent-Type: multipart/alternative; boundary="foobarfoobarfoobarfoobarfoobar"\r\n\r\n--foobarfoobarfoobarfoobarfoobar\r\nContent-Type: text/plain\r\nContent-Transfer-Encoding: quoted-printable\r\n\r\nyaddayadda\r\n\r\n--foobarfoobarfoobarfoobarfoobar\r\nContent-Type: text/html\r\nContent-Transfer-Encoding: quoted-printable\r\n\r\n<div>fiifaafooo</div>\r\n\r\n--foobarfoobarfoobarfoobarfoobar--\r\n');
+                expect(builder.build()).to.equal('MIME-Version: 1.0\r\nFrom: fred@foo.com\r\nTo: lala@tralala.de\r\nSubject: Interesting subject\r\nContent-Type: multipart/alternative; boundary="foobarfoobarfoobarfoobarfoobar"\r\n\r\n--foobarfoobarfoobarfoobarfoobar\r\nContent-Type: text/plain\r\nContent-Transfer-Encoding: quoted-printable\r\n\r\nyaddayadda\r\n\r\n--foobarfoobarfoobarfoobarfoobar\r\nContent-Type: text/html\r\nContent-Transfer-Encoding: quoted-printable\r\n\r\n<div>fiifaafooo</div>\r\n\r\n--foobarfoobarfoobarfoobarfoobar--\r\n');
             });
         });
 

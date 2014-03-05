@@ -8,9 +8,7 @@ if (typeof module === 'object' && typeof define !== 'function') {
 
 define(function(require) {
     var Mailbuilder, Node,
-        mimelib = require('mimelib'),
-        VERSION = '0.0.1',
-        NAME = 'mailbuilder';
+        mimelib = require('mimelib');
 
     /**
      * Represents a MIME node, which contains content and information about the type of content it houses.
@@ -121,8 +119,7 @@ define(function(require) {
      */
     Mailbuilder = function() {
         this.envelope = {
-            'MIME-Version': '1.0',
-            'X-Mailer': NAME + '_' + VERSION
+            'MIME-Version': '1.0'
         };
 
         this.from = {};

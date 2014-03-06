@@ -8,9 +8,7 @@ if (typeof module === 'object' && typeof define !== 'function') {
 
 define(function(require) {
     var Mailbuilder, Node,
-        mimelib = require('mimelib'),
-        VERSION = '0.0.1',
-        NAME = 'mailbuilder';
+        mimelib = require('mimelib');
 
     /**
      * Represents a MIME node, which contains content and information about the type of content it houses.
@@ -82,12 +80,10 @@ define(function(require) {
                 line += '; ' + key + '="' + i.parameters[key] + '"';
             });
 
-            line += '\r\n';
             mimeLines.push(line);
         });
 
-        output += mimeLines.join('');
-        output += '\r\n';
+        output += mimeLines.join('\r\n') + '\r\n';
 
         if (content) {
             if (encoding === 'quoted-printable') {
@@ -102,17 +98,18 @@ define(function(require) {
                 content = content.replace(/^[ ]{7}/mg, '');
             }
 
-            output += content;
-            output += '\r\n\r\n';
+            output += '\r\n' + content.trim();
         }
 
         if (this.nodes.length > 0) {
+            output += '\r\n';
             this.nodes.forEach(function(node) {
-                output += '--' + multipartBoundary + '\r\n';
-                output += node.build();
+                output += '--' + multipartBoundary + '\r\n' + node.build() + '\r\n';
             });
-            output += '--' + multipartBoundary + '--' + '\r\n\r\n';
+            output += '--' + multipartBoundary + '--';
         }
+
+        output += '\r\n';
 
         return output;
     };
@@ -122,8 +119,7 @@ define(function(require) {
      */
     Mailbuilder = function() {
         this.envelope = {
-            'MIME-Version': '1.0',
-            'X-Mailer': NAME + '_' + VERSION
+            'MIME-Version': '1.0'
         };
 
         this.from = {};
